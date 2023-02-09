@@ -29,10 +29,6 @@ To run subject specific model results for Bio-Z to BP estimation run:
 ```bash
 python subject_specific_regression.py
 ```
-To run the initial leave one subject out analysis for Bio-Z to BP estimation run:
-```bash
-python one_subject_out_regression.py
-```
 To run the supplementary leave subject out analysis for Bio-Z to BP estimation run:
 ```bash
 python leave_subjects_out_regression.py

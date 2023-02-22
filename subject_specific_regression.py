@@ -10,13 +10,17 @@ import seaborn as sns
 from scipy.stats import pearsonr
 
 '''
+Run file to perform subject specific BP analysis
 XC: Changes in Bio-Z Features from first point
 YC: Changes in BP from first point
 XD: Raw Bio-Z Features
 YD: Raw in BP
 '''
+# Open Data File
 matData = spio.loadmat('Feature_and_BP_Subject_Data.mat')
 df = pd.DataFrame({'XC': matData['XC'][0], 'YC': matData['YC'][0], 'ZD': matData['ZD'][0], 'YD': matData['YD'][0]})
+
+# Iterate analysis for all 10 subjects
 for s in range(1, 11):
     print('\n')
     print('Subject', s)
@@ -26,13 +30,18 @@ for s in range(1, 11):
     for t in subject:
         Z_data = np.append(Z_data, df['ZD'].iloc[t - 1][0], axis=0)
         Y_data = np.append(Y_data, df['YD'].iloc[t - 1][0], axis=0)
+        
+    # Apply moving average to Bio-Z data and BP data
     Z_data, Y_data = wind_avg(10, 5, Z_data, 15, Y_data, 3)
+    
+    # Print the range, mean, std, and number of samples
     print('Range:', np.max(Y_data, axis=0), np.min(Y_data, axis=0))
     print('Mean/Std:', np.mean(Y_data, axis=0), np.std(Y_data, axis=0))
     print('N:', len(Y_data))
 
     # BP_Type 0 for SBP, 1 for MAP, and 2 for DBP
     for BP_Type in (0, 2):
+        # Perform k-fold split
         kf = KFold(n_splits=5, shuffle=True, random_state=0)
         ZBP, Y_data1 = np.array([]), np.array([])
         adaZ = AdaBoostRegressor(base_estimator=DecisionTreeRegressor(max_depth=5), n_estimators=50)
@@ -42,7 +51,8 @@ for s in range(1, 11):
             adaZ.fit(Z_train, y_train[:, BP_Type])
             Y_predicted = np.append(ZBP, adaZ.predict(Z_test))
             Y_real = np.append(Y_data1, y_test[:, BP_Type])
-
+        
+        # Plot Real and Predicted BP Data
         plt.figure()
         sns.set_theme(), sns.set_context("talk"), sns.set_style('white')
         plt.plot(np.arange(1, len(Y_real) + 1), Y_real, '0.8', linewidth=6, marker='8')
@@ -50,7 +60,8 @@ for s in range(1, 11):
         plt.legend(['Actual SBP', 'Predicted SBP', 'Actual DBP', 'Predicted DBP'], fontsize=14)
         plt.xlabel('Time [min]', fontsize=20), plt.ylabel('Blood Pressure [mmHg]', fontsize=20)
         plt.show()
-
+        
+        # Report prediction errors for SBP and DBP
         if BP_Type == 0:
             print('SBP Error: ', round(np.mean(Y_real - Y_predicted), 3), round(np.std(Y_real - Y_predicted), 3),
                   round(pearsonr(Y_real, Y_predicted)[0], 3), round(np.sqrt(np.mean(np.square(Y_real - Y_predicted))), 3))

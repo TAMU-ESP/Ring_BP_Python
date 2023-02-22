@@ -1,7 +1,6 @@
 import numpy as np
 def wind_avg(window_size, stride, X, X_feat_num, Y, Y_feat_num):
-    ##############
-    #print('Overlap:', 100 * (window_size - stride) / window_size)
+    ''' Function to apply a moving average to arrays'''
     X1, Y1 = np.array([]), np.array([])
     for f in range(0,X_feat_num):
         X2 = [np.mean(X[:,f][i:i+window_size]) for i in range(0, len(X[:,f]), stride) if i+window_size <= len(X[:,f]) ]

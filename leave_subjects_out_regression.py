@@ -57,7 +57,7 @@ plt.show()
 
 # Apply moving average filter to testing data
 if test_subjects[0] == 9:
-    Ztest, Ytest = wind_avg(10, 5, Z_test[l:, :], 15, Y_test[l:, :], 3)
+    Z_test, Y_test = wind_avg(10, 5, Z_test[l:, :], 15, Y_test[l:, :], 3)
 else: 
     Z_test, Y_test = wind_avg(10, 5, Z_test, 15, Y_test, 3)
  

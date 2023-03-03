@@ -63,7 +63,7 @@ else:
  
 Ypredicted = ann.predict(Z_test) # Predict BP
 plt.figure()
-# 0 - SBP, 1 - DBP
+# 0 - SBP, 2 - DBP
 for BP in (0, 2):
     cal = np.mean(Y_test[[-1, 1], BP] - Ypredicted[[-1, 1], BP])
     Ypredicted[:, BP] = Ypredicted[:, BP] + cal
